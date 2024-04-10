@@ -1,0 +1,17 @@
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\bin\Debug\net6.0\Despending.Logic.deps.json
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\bin\Debug\net6.0\Despending.Logic.dll
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\bin\Debug\net6.0\Despending.Logic.pdb
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\bin\Debug\net6.0\DataLayer.dll
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\bin\Debug\net6.0\GoodsLibrary.dll
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\bin\Debug\net6.0\DataLayer.pdb
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\bin\Debug\net6.0\GoodsLibrary.pdb
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\Despending.Logic.csproj.AssemblyReference.cache
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\Despending.Logic.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\Despending.Logic.AssemblyInfoInputs.cache
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\Despending.Logic.AssemblyInfo.cs
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\Despending.Logic.csproj.CoreCompileInputs.cache
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\Despending.Logic.csproj.CopyComplete
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\Despending.Logic.dll
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\refint\Despending.Logic.dll
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\Despending.Logic.pdb
+C:\Users\n.lysikov\source\repos\DespendingMachine\Despending.Logic\obj\Debug\net6.0\ref\Despending.Logic.dll

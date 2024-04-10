@@ -1,0 +1,191 @@
+﻿@page "/Despending"
+@using System.Net.Http
+@using System.Net.Http.Headers
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h1>Список предметов</h1>
+
+@if (Products == null || Coins == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="Cards">
+        @foreach (var product in Products)
+        {
+            <div class="ProductCard">
+                <h2>@product.title</h2>
+                <p>Цена: @product.price</p>
+                <p>Количество: @product.count</p>
+                <img src="@product.image" alt="@product.title">
+                @if (IsTotalAmountSufficientForProduct(product))
+                {
+                    <button @onclick="() => SelectProduct(product.id)">Выбрать</button>
+                }
+                else
+                {
+                    <p>Недостаточно средств</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="container">
+        <div class="row">
+            @foreach (var coin in Coins)
+            {
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <p>Идентификатор: @coin.id</p>
+                            <h2 class="card-title">Номинал: @coin.nominal</h2>
+                            @if (coin.available)
+                            {
+                                <p>Доступно: @coin.count</p>
+                                @if (coinAmounts.ContainsKey(coin.id))
+                                {
+                                    <input type="number" min="0" max="@coin.count" @bind="@coinAmounts[coin.id]" />
+                                }
+                                else
+                                {
+                                    <input type="number" min="0" max="@coin.count" @oninput="@((ChangeEventArgs args) => AddCoinAmount(coin.id, Convert.ToInt32(args.Value)))" />
+                                }
+                            }
+                            else
+                            {
+                                <p>Недоступно: @coin.count</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <p>Сумма внесенных монет: @CalculateTotalAmount()</p>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <p>@ErrorMessage</p>
+        }
+        @if (!string.IsNullOrEmpty(selectedProductId))
+        {
+            <p>Выбранный напиток: @Products.FirstOrDefault(p => p.id == selectedProductId)?.title</p>
+        }
+        <button @onclick="Despend" disabled="@(!IsProductSelected)">Выдать</button>
+    </div>
+}
+
+@code {
+    private string ErrorMessage = "";
+    private Product[] Products;
+    private Coin[] Coins;
+    private string selectedProductId;
+    private Dictionary<int, int> coinAmounts = new Dictionary<int, int>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseProducts = await Http.GetFromJsonAsync<Product[]>("https://localhost:7167/User/getGoods");
+        Products = responseProducts;
+        var responseCoins = await Http.GetFromJsonAsync<Coin[]>("https://localhost:7167/User/getCoins");
+        Coins = responseCoins;
+    }
+    private void AddCoinAmount(int coinId, int amount)
+    {
+        if (coinAmounts.ContainsKey(coinId))
+        {
+            coinAmounts[coinId] = amount;
+        }
+        else
+        {
+            coinAmounts.Add(coinId, amount);
+        }
+    }
+
+    private void SelectProduct(string productId)
+    {
+        selectedProductId = productId;
+    }
+
+    private bool IsProductSelected => !string.IsNullOrEmpty(selectedProductId);
+    private int CalculateTotalAmount()
+    {
+        int totalAmount = 0;
+        foreach (var (coinId, coinCount) in coinAmounts)
+        {
+            var coin = Coins.FirstOrDefault(c => c.id == coinId);
+            if (coin != null)
+            {
+                totalAmount += coin.nominal * coinCount;
+            }
+        }
+        return totalAmount;
+    }
+    private async Task Despend()
+    {
+        if (!IsProductSelected)
+        {
+            return;
+        }
+
+        var selectedCoins = Coins.Where(c => coinAmounts.ContainsKey(c.id) && coinAmounts[c.id] > 0)
+                                 .Select(c => new { id = c.id, count = coinAmounts[c.id] })
+                                 .ToList();
+
+        var json = JsonSerializer.Serialize(selectedCoins);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        try
+        {
+            var response = await Http.PostAsync($"https://localhost:7167/User/despend/{selectedProductId}", content);
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (responseContent.Trim().ToLower() == "true")
+            {
+                ErrorMessage = string.Empty;
+                Navigation.NavigateTo("/Despending", forceLoad: true);
+
+            }
+            else
+            {
+                ErrorMessage = "Автомат не хочет выдавать ваш напиток, вы точно не хитрите?";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Автомат потерял связь с духами предков :(";
+        }
+    }
+    private bool IsTotalAmountSufficientForProduct(Product product)
+    {
+        if (product == null)
+        {
+            return false;
+        }
+
+        int productPrice = product.price;
+        int totalAmount = CalculateTotalAmount();
+        return totalAmount >= productPrice;
+    }
+
+    public class Product
+    {
+        public string id { get; set; }
+        public string title { get; set; }
+        public int price { get; set; }
+        public int count { get; set; }
+        public string image { get; set; }
+    }
+
+    public class Coin
+    {
+        public int id { get; set; }
+        public int nominal { get; set; }
+        public bool available { get; set; }
+        public int count { get; set; }
+    }
+}

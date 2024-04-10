@@ -1,0 +1,11 @@
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\bin\Debug\net6.0\GoodsLibrary.deps.json
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\bin\Debug\net6.0\GoodsLibrary.dll
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\bin\Debug\net6.0\GoodsLibrary.pdb
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\obj\Debug\net6.0\GoodsLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\obj\Debug\net6.0\GoodsLibrary.AssemblyInfoInputs.cache
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\obj\Debug\net6.0\GoodsLibrary.AssemblyInfo.cs
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\obj\Debug\net6.0\GoodsLibrary.csproj.CoreCompileInputs.cache
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\obj\Debug\net6.0\GoodsLibrary.dll
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\obj\Debug\net6.0\refint\GoodsLibrary.dll
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\obj\Debug\net6.0\GoodsLibrary.pdb
+C:\Users\n.lysikov\source\repos\DespendingMachine\GoodsLibrary\obj\Debug\net6.0\ref\GoodsLibrary.dll

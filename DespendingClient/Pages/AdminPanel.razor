@@ -1,0 +1,222 @@
+﻿@page "/SuperSecretAdminPanel2000"
+@using System.Net.Http
+@using System.Net.Http.Headers
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>AdminPanel</PageTitle>
+
+<div class="container">
+    <h2>Create Good</h2>
+    <div class="form-group">
+        <label for="title">Title:</label>
+        <input class="form-control" type="text" id="title" @bind="@newGood.title" />
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input class="form-control" type="number" id="price" @bind="@newGood.price" />
+    </div>
+    <div class="form-group">
+        <label for="count">Count:</label>
+        <input class="form-control" type="number" id="count" @bind="@newGood.count" />
+    </div>
+    <div class="form-group">
+        <label for="image">Image URL:</label>
+        <input class="form-control" type="text" id="image" @bind="@newGood.image" />
+    </div>
+    <button class="btn btn-primary" @onclick="CreateGood">Create</button>
+</div>
+
+<div class="container mt-5">
+    <h2>List of Goods</h2>
+    @if (goods != null && goods.Any())
+    {
+        foreach (var good in goods)
+        {
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h3>@good.title</h3>
+                    <p>Price: @good.price</p>
+                    <p>Count: @good.count</p>
+                    <p><img src="@good.image" alt="@good.title" class="img-fluid" /></p>
+                    <button class="btn btn-primary" @onclick="() => EditGood(good)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteGood(good)">Delete</button>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No goods available.</p>
+    }
+</div>
+
+@if (showEditModal)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display:block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Good</h5>
+                    <button type="button" class="close" @onclick="CloseEditModal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editTitle">Title:</label>
+                        <input class="form-control" type="text" id="editTitle" @bind="@editedGood.title" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editPrice">Price:</label>
+                        <input class="form-control" type="number" id="editPrice" @bind="@editedGood.price" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editCount">Count:</label>
+                        <input class="form-control" type="number" id="editCount" @bind="@editedGood.count" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editImage">Image URL:</label>
+                        <input class="form-control" type="text" id="editImage" @bind="@editedGood.image" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveEditedGood">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="container">
+    <h2>List of Coins</h2>
+    @if (coins != null && coins.Any())
+    {
+        foreach (var coin in coins)
+        {
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h3>Coin ID: @coin.id</h3>
+                    <div class="form-group form-check">
+                        <input class="form-check-input" type="checkbox" id="available" @bind="@coin.available" />
+                        <label class="form-check-label" for="available">Available</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="count">Count:</label>
+                        <input class="form-control" type="number" id="count" @bind="@coin.count" />
+                    </div>
+                    <button class="btn btn-primary" @onclick="() => UpdateCoin(coin)">Save Changes</button>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No coins available.</p>
+    }
+</div>
+
+
+@code {
+    public class CoinResponse
+    {
+        public int id { get; set; }
+        public bool available { get; set; }
+        public int count { get; set; }
+    }
+
+    public class GoodResponse {
+        public Guid id { get; set; }
+        public string? title { get; set; }
+        public decimal? price { get; set; }
+        public int? count { get; set; }
+        public string? image { get; set; }
+    }
+
+    public class GoodRequest
+    {
+        public string? title { get; set; }
+        public decimal? price { get; set; }
+        public int? count { get; set; }
+        public string? image { get; set; }
+    }
+
+    private List<CoinResponse> coins;
+    private List<GoodResponse> goods;
+    private GoodRequest newGood = new GoodRequest();
+    private GoodResponse editedGood = new GoodResponse();
+    private bool showEditModal = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGoods();
+        await LoadCoins();
+    }
+
+    private async Task LoadGoods()
+    {
+        var response = await Http.GetFromJsonAsync<List<GoodResponse>>("https://localhost:7167/User/getGoods");
+        goods = response;
+    }
+
+    private async Task CreateGood()
+    {
+        var response = await Http.PostAsJsonAsync("https://localhost:7167/Good", newGood);
+        response.EnsureSuccessStatusCode();
+        await LoadGoods();
+        newGood = new GoodRequest(); // Очищаем поля для нового товара
+    }
+
+    private async Task EditGood(GoodResponse good)
+    {
+        editedGood = good;
+        showEditModal = true;
+    }
+
+    private void CloseEditModal()
+    {
+        showEditModal = false;
+    }
+
+    private async Task SaveEditedGood()
+    {
+        // Отправляем запрос на сервер для обновления товара
+        var response = await Http.PutAsJsonAsync($"https://localhost:7167/Good/{editedGood.id}", new GoodRequest
+            {
+                title = editedGood.title,
+                price = editedGood.price,
+                count = editedGood.count,
+                image = editedGood.image
+            });
+        response.EnsureSuccessStatusCode();
+        await LoadGoods();
+        showEditModal = false;
+    }
+
+    private async Task DeleteGood(GoodResponse good)
+    {
+        var response = await Http.DeleteAsync($"https://localhost:7167/Good/{good.id}");
+        response.EnsureSuccessStatusCode();
+        await LoadGoods();
+    }
+    private async Task LoadCoins()
+    {
+        var response = await Http.GetFromJsonAsync<List<CoinResponse>>("https://localhost:7167/User/getCoins");
+        coins = response;
+    }
+
+    private async Task UpdateCoin(CoinResponse coin)
+    {
+        var queryString = $"?available={coin.available}&count={coin.count}";
+
+        var response = await Http.PutAsync($"https://localhost:7167/Coin/{coin.id}{queryString}", null);
+        response.EnsureSuccessStatusCode();
+
+        await LoadCoins();
+    }
+
+
+}
